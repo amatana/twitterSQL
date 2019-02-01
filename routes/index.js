@@ -2,18 +2,27 @@
 var express = require('express');
 var router = express.Router();
 var tweetBank = require('../tweetBank');
+var client = require("../db/index.js")
 
 module.exports = router;
 
 // una función reusable
 function respondWithAllTweets (req, res, next){
-  var allTheTweets = tweetBank.list();
+client.query('SELECT * FROM tweets', function (err, result) {
+  if (err) return next(err); // pasa el error a Express
+  var tweets = result.rows;
+  res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true });
+});
+/*  var allTheTweets = tweetBank.list();
   res.render('index', {
     title: 'Twitter.js',
     tweets: allTheTweets,
     showForm: true
-  });
+  });*/
 }
+
+
+
 
 // aca basícamente tratamos a la root view y la tweets view como identica
 router.get('/', respondWithAllTweets);
